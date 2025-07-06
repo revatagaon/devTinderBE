@@ -1,5 +1,7 @@
 const express = require("express");
-const { adminAuth, userAuth } = require("./middlewares/auth");
+const connectDB = require("./config/database");
+const User = require("./models/user");
+// const { adminAuth, userAuth } = require("./middlewares/auth");
 
 const app = express();
 
@@ -75,39 +77,61 @@ const app = express();
 
 // For Admin checking
 
-app.use("/admin", adminAuth)
+// app.use("/admin", adminAuth)
 
-app.get("/admin/getAllData", (req, res) => {
-  res.send("Got all the User Data")
-})
+// app.get("/admin/getAllData", (req, res) => {
+//   res.send("Got all the User Data")
+// })
 
-app.get("/admin/deleteUser", (req, res) => {
-  res.send("Deleted a User")
-})
+// app.get("/admin/deleteUser", (req, res) => {
+//   res.send("Deleted a User")
+// })
 
-app.use("/user", userAuth, (req, res) => {
-  res.send("User data sent")
-})
+// app.use("/user", userAuth, (req, res) => {
+//   res.send("User data sent")
+// })
 
 // Error Handling
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    res.status(500).send("Something went wrong")
-  }
-})
+// app.use("/", (err, req, res, next) => {
+//   if (err) {
+//     res.status(500).send("Something went wrong")
+//   }
+// })
 
-app.use("/getUserData", (req, res) => {
+// app.use("/getUserData", (req, res) => {
+//   try {
+//     throw new Error("This is a test error")
+//     res.send("User data sent")
+//   } catch (err) {
+//     res.status(500).send("Some error contact support team")
+//   }
+// })
+
+app.post("/signup", async (req, res) => {
+  let user = new User({
+    firstName: "Sangu",
+    lastName: "Ballolli",
+    emailId: "sangu@gmail.com",
+    password: "Sangu@123",
+  })
+
   try {
-    throw new Error("This is a test error")
-    res.send("User data sent")
+    await user.save();
+    res.send("User created successfully");
   } catch (err) {
-    res.status(500).send("Some error contact support team")
+    res.status(400).send("Error saving user "+ err.message);
   }
 })
 
-app.listen(7777, () => {
-  console.log("Server is successfully running on port 3000...")
-})
+connectDB().then(() => {
+  console.log("Database connected successfully");
+
+  app.listen(7777, () => {
+    console.log("Server is successfully running on port 7777...")
+  })
+}).catch((err) => {
+  console.error("Database connection failed:", err);
+});
 
 // The order of the app.use matters, and it executes the app.use in a synchronous way
 
