@@ -107,13 +107,18 @@ const app = express();
 //   }
 // })
 
+app.use(express.json()); // The Middleware to parse JSON request body to javascript object
+
 app.post("/signup", async (req, res) => {
-  let user = new User({
-    firstName: "Sangu",
-    lastName: "Ballolli",
-    emailId: "sangu@gmail.com",
-    password: "Sangu@123",
-  })
+  // Creating a new instance of the User model
+  // let user = new User({
+  //   firstName: "Sangu",
+  //   lastName: "Ballolli",
+  //   emailId: "sangu@gmail.com",
+  //   password: "Sangu@123",
+  // })
+
+  let user = new User(req.body)
 
   try {
     await user.save();
