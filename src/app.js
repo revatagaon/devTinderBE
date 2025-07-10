@@ -143,10 +143,26 @@ app.get("/feed", async (req, res) => {
 })
 
 // This API will update the user data in the database
-app.patch("/user", async (req, res) => {
-  const userID = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userID = req.params?.userId;
   const data = req.body;
   try {
+
+    // This is API level validation
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "skills", "age"]
+
+    const isAllowed = Object.keys(data).every((key) => {
+      ALLOWED_UPDATES.includes(key);
+    });
+
+    if(!isAllowed) {
+      return res.status(400).send("Invalid data provided for update");
+    }
+
+    if(data.skills.length > 10) {
+      return res.status(400).send("Skills should not be more than 10");
+    }
+
     await User.findByIdAndUpdate({_id:userID}, data, {returnDocument:"after", runValidators:true});
     res.send("User updated successfully");    
   } catch (error) {
