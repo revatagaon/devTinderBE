@@ -124,7 +124,45 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User created successfully");
   } catch (err) {
-    res.status(400).send("Error saving user "+ err.message);
+    res.status(400).send("Error saving user " + err.message);
+  }
+})
+
+// Feed API to get all the users from the database
+app.get("/feed", async (req, res) => {
+  // Following code is to get a single data from the database and it will return an array of object
+  // const userEmail = req.body.emailId
+  // const users = await User.find({ emaidId: userEmail })
+  try {
+    // This will return all the users from the database
+    const users = await User.find({})
+    res.send(users)
+  } catch (error) {
+    res.status(404).send("Data not found")
+  }
+})
+
+// This API will update the user data in the database
+app.patch("/user", async (req, res) => {
+  const userID = req.body.userId;
+  const data = req.body;
+  try {
+    await User.findByIdAndUpdate({_id:userID}, data, )
+    res.send("User updated successfully");    
+  } catch (error) {
+    res.status(404).send("User not found")
+  }
+});
+
+// Delete API to delete a user from the database
+app.delete("/user", async (req, res) => {
+  const userID = req.body.userId;
+  console.log("User ID to delete:", userID);
+  try {
+    const user = User.findByIdAndDelete(userID);
+    res.send("User deleted successfully");
+  } catch (error) {
+    res.status(404).send("User not found")
   }
 })
 
